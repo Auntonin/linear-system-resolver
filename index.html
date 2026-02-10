@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear System Resolver | ตัวแก้ระบบสมการเชิงเส้น</title>
+    <meta name="description"
+        content="เครื่องมือแก้ระบบสมการเชิงเส้นพร้อมแสดงขั้นตอนการคำนวณอย่างละเอียด รองรับ Gauss Elimination, Gauss-Jordan, LU Factorization และ Inverse Matrix">
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                <h1>Linear System Resolver</h1>
+            </div>
+            <p class="tagline">ตัวแก้ระบบสมการเชิงเส้น พร้อมขั้นตอนการคำนวณ</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="section-header">
+                    <h2>📊 ป้อนข้อมูล Matrix</h2>
+                    <div class="size-selector">
+                        <label for="matrix-size">ขนาด Matrix (n×n):</label>
+                        <select id="matrix-size">
+                            <option value="2">2×2</option>
+                            <option value="3" selected>3×3</option>
+                            <option value="4">4×4</option>
+                            <option value="5">5×5</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="matrix-input-container">
+                    <div class="matrix-wrapper">
+                        <div class="matrix-label">Matrix A (สัมประสิทธิ์)</div>
+                        <div class="matrix-with-brackets">
+                            <div class="matrix-bracket left">[</div>
+                            <div id="matrix-a" class="matrix-grid"></div>
+                            <div class="matrix-bracket right">]</div>
+                        </div>
+                    </div>
+
+                    <div class="vector-wrapper">
+                        <div class="matrix-label">Vector b (ค่าคงที่)</div>
+                        <div class="matrix-with-brackets">
+                            <div class="matrix-bracket left">[</div>
+                            <div id="vector-b" class="vector-grid"></div>
+                            <div class="matrix-bracket right">]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-actions">
+                    <button class="btn btn-secondary" id="btn-clear">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                        </svg>
+                        ล้างข้อมูล
+                    </button>
+                    <button class="btn btn-secondary" id="btn-example">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                            <polyline points="14,2 14,8 20,8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10,9 9,9 8,9" />
+                        </svg>
+                        โหลดตัวอย่าง
+                    </button>
+                </div>
+            </section>
+
+            <!-- Method Selection -->
+            <section class="method-section">
+                <h2>🧮 เลือกวิธีการแก้สมการ</h2>
+                <div class="method-grid">
+                    <button class="method-card" data-method="gauss">
+                        <div class="method-icon">G</div>
+                        <div class="method-info">
+                            <h3>Gauss Elimination</h3>
+                            <p>with Pivoting</p>
+                        </div>
+                    </button>
+                    <button class="method-card" data-method="gauss-jordan">
+                        <div class="method-icon">GJ</div>
+                        <div class="method-info">
+                            <h3>Gauss-Jordan</h3>
+                            <p>Elimination</p>
+                        </div>
+                    </button>
+                    <button class="method-card" data-method="lu">
+                        <div class="method-icon">LU</div>
+                        <div class="method-info">
+                            <h3>LU Factorization</h3>
+                            <p>A = LU</p>
+                        </div>
+                    </button>
+                    <button class="method-card" data-method="inverse">
+                        <div class="method-icon">A⁻¹</div>
+                        <div class="method-info">
+                            <h3>Inverse Matrix</h3>
+                            <p>x = A⁻¹b</p>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Output Section -->
+            <section class="output-section" id="output-section">
+                <div class="output-header">
+                    <h2>📋 ผลลัพธ์การคำนวณ</h2>
+                    <button class="btn btn-icon" id="btn-copy" title="คัดลอก Log">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Result Card -->
+                <div class="result-card" id="result-card">
+                    <div class="result-header">
+                        <span class="result-method" id="result-method">Gauss Elimination</span>
+                        <span class="result-status" id="result-status">สำเร็จ</span>
+                    </div>
+                    <div class="result-solution" id="result-solution">
+                        <!-- Solution will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Execution Log -->
+                <div class="log-container">
+                    <div class="log-header">
+                        <h3>📝 ขั้นตอนการคำนวณ (Execution Log)</h3>
+                        <div class="log-controls">
+                            <button class="btn btn-sm" id="btn-expand-all">ขยายทั้งหมด</button>
+                            <button class="btn btn-sm" id="btn-collapse-all">ยุบทั้งหมด</button>
+                        </div>
+                    </div>
+                    <div class="log-content" id="log-content">
+                        <div class="log-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4M12 8h.01" />
+                            </svg>
+                            <p>เลือกวิธีการแก้สมการเพื่อดูขั้นตอนการคำนวณ</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>สร้างเพื่อการศึกษา | Linear System Resolver</p>
+            <p class="footer-note">โค้ดเขียนแบบ Beginner-Friendly พร้อมคอมเมนต์ภาษาไทย</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="algorithms.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
